@@ -1,0 +1,41 @@
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #1B2A6B;    /* Deep Navy */
+    --color-accent:  #FF6B00;    /* Saffron Orange */
+    --color-green:   #00C875;    /* Emerald */
+    --color-light:   #F5F7FF;    /* Off-white */
+    --color-dark:    #0D1B2A;    /* Near Black */
+    --font-display:  'Clash Display', sans-serif;
+    --font-body:     'Satoshi', sans-serif;
+  }
+  
+  html, body, #root {
+    @apply w-full min-h-screen m-0 p-0;
+  }
+
+  body {
+    @apply bg-dark text-light font-body overflow-x-hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .rotate-x-12 {
+    transform: rotateX(12deg);
+  }
+  .rotate-y-12 {
+    transform: rotateY(12deg);
+  }
+}
