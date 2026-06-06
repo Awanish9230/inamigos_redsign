@@ -1,17 +1,38 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SceneCanvas from '../components/3d/SceneCanvas';
 import EventsScene from '../components/3d/EventsScene';
 import PageTransition from '../components/layout/PageTransition';
+import { Skeleton } from '../components/ui/Skeleton';
+import SmartImage from '../components/ui/SmartImage';
+import { IMAGES } from '../config/images';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Events = () => {
   const mainRef = useRef(null);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/events');
+        const data = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
     let ctx = gsap.context(() => {
       gsap.from('.event-card', {
         y: 40,
@@ -35,7 +56,10 @@ const Events = () => {
       });
     }, mainRef);
     return () => ctx.revert();
-  }, []);
+  }, [loading]);
+
+  const featuredEvents = events.slice(0, 2);
+  const upcomingEvents = events.slice(2);
 
   return (
     <PageTransition>
@@ -44,13 +68,25 @@ const Events = () => {
         <title>Events - InAmigos Foundation</title>
       </Helmet>
       
+      {/* 1. Background image layer */}
       <div className="fixed inset-0 z-0 pointer-events-none">
+        <SmartImage
+          src={IMAGES.events.summit}
+          alt="Events background"
+          className="absolute inset-0 w-full h-full"
+          fallbackSeed="conference"
+        />
+        {/* 2. Dark gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0D1B2A]/80 via-[#0D1B2A]/60 to-[#0D1B2A]/90" />
+      </div>
+
+      <div className="fixed inset-0 z-10 pointer-events-none">
         <SceneCanvas>
           <EventsScene />
         </SceneCanvas>
       </div>
 
-      <section className="relative w-full h-screen min-h-screen flex flex-col justify-center items-center pt-20 z-10 text-center overflow-hidden">
+      <section className="relative w-full h-screen min-h-screen flex flex-col justify-center items-center pt-20 z-20 text-center overflow-hidden">
         <div className="px-4 pointer-events-none">
           <h1 className="text-5xl md:text-7xl font-display font-bold text-light drop-shadow-lg leading-tight">
             Shape the <span className="text-accent">Future</span>
@@ -81,79 +117,114 @@ const Events = () => {
 
           {/* Featured Events */}
           <h2 className="text-3xl font-display font-bold mb-8">Featured Events</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 event-grid mb-24">
-            {[1, 2].map((item) => (
-              <div key={item} className="event-card bg-primary/20 border border-light/10 rounded-3xl overflow-hidden group hover:shadow-[0_0_30px_rgba(27,42,107,0.4)] transition duration-500">
-                <div className="h-64 bg-dark/50 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent z-10"></div>
-                  <div className="absolute top-4 left-4 z-20 bg-light text-dark rounded-xl px-4 py-2 text-center font-bold shadow-lg">
-                    <div className="text-sm text-accent uppercase tracking-widest">Apr</div>
-                    <div className="text-2xl font-display">22</div>
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center text-light/20 font-display text-xl group-hover:scale-105 transition duration-700">
-                    [Event Image]
-                  </div>
-                </div>
-                <div className="p-8 relative">
-                  <div className="inline-block px-3 py-1 bg-green/20 text-green rounded-full text-xs font-bold border border-green/30 w-max mb-4">
-                    Environment
-                  </div>
-                  <h3 className="text-2xl font-display font-bold text-light mb-3">Earth Day Mega Plantation Summit</h3>
-                  <p className="text-light/70 mb-6 line-clamp-2">Join 500+ volunteers as we aim to plant 10,000 saplings across the city in a single day to combat climate change.</p>
-                  
-                  <div className="flex flex-col gap-2 mb-8 text-sm text-light/80">
-                    <div className="flex items-center gap-2">
-                      <span className="text-accent">📍</span> Delhi NCR Region
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-accent">⏰</span> 08:00 AM - 02:00 PM
-                    </div>
-                  </div>
+          
+          {loading ? (
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 event-grid mb-24">
+                <Skeleton className="h-[500px] w-full" />
+                <Skeleton className="h-[500px] w-full" />
+             </div>
+          ) : featuredEvents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 event-grid mb-24">
+              {featuredEvents.map((item, index) => {
+                const dateObj = new Date(item.date);
+                const month = dateObj.toLocaleString('en-US', { month: 'short' });
+                const day = dateObj.getDate();
 
-                  <div className="flex gap-4">
-                    <button className="bg-accent text-light px-8 py-3 rounded-full font-semibold hover:bg-accent/90 transition shadow-[0_0_15px_rgba(255,107,0,0.3)] flex-grow">
-                      Join Event
-                    </button>
-                    <button className="bg-transparent border border-light/30 px-6 py-3 rounded-full hover:bg-light/10 transition">
-                      Share
-                    </button>
+                return (
+                  <div key={item._id} className="event-card bg-primary/20 border border-light/10 rounded-3xl overflow-hidden group hover:shadow-[0_0_30px_rgba(27,42,107,0.4)] transition duration-500 flex flex-col">
+                    <div className="h-64 bg-dark/50 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent z-10"></div>
+                      <div className="absolute top-4 left-4 z-20 bg-light text-dark rounded-xl px-4 py-2 text-center font-bold shadow-lg">
+                        <div className="text-sm text-accent uppercase tracking-widest">{month}</div>
+                        <div className="text-2xl font-display">{day}</div>
+                      </div>
+                      <SmartImage 
+                        src={item.coverImage || Object.values(IMAGES.events)[index % 5]}
+                        alt={item.title}
+                        className="absolute inset-0 w-full h-full group-hover:scale-105 transition duration-700"
+                        fallbackSeed={`event${index}`}
+                      />
+                    </div>
+                    <div className="p-8 relative flex-grow flex flex-col">
+                      <div className="inline-block px-3 py-1 bg-green/20 text-green rounded-full text-xs font-bold border border-green/30 w-max mb-4">
+                        {item.category || 'Event'}
+                      </div>
+                      <h3 className="text-2xl font-display font-bold text-light mb-3">{item.title}</h3>
+                      <p className="text-light/70 mb-6 line-clamp-2 flex-grow">{item.description}</p>
+                      
+                      <div className="flex flex-col gap-2 mb-8 text-sm text-light/80">
+                        <div className="flex items-center gap-2">
+                          <span className="text-accent">📍</span> {item.location || 'Online'}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-accent">⏰</span> {dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute:'2-digit' })}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-4">
+                        <button className="bg-accent text-light px-8 py-3 rounded-full font-semibold hover:bg-accent/90 transition shadow-[0_0_15px_rgba(255,107,0,0.3)] flex-grow">
+                          Join Event
+                        </button>
+                        <button className="bg-transparent border border-light/30 px-6 py-3 rounded-full hover:bg-light/10 transition">
+                          Share
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+             <div className="text-center py-12 text-light/50 border border-dashed border-light/10 rounded-3xl mb-24">
+                No featured events at the moment.
+             </div>
+          )}
 
           {/* Compact Event List & Stats */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 reveal-section">
             <div className="lg:col-span-2">
               <h2 className="text-3xl font-display font-bold mb-8">Upcoming Schedule</h2>
-              <div className="space-y-4">
-                {[
-                  { date: 'MAY 05', title: 'Volunteer Leadership Training', cat: 'Education' },
-                  { date: 'JUN 12', title: 'Project Seva: Mega Food Drive', cat: 'Health' },
-                  { date: 'JUL 20', title: 'Jeev Animal Rescue Workshop', cat: 'Animal Rescue' },
-                ].map((event, i) => (
-                  <div key={i} className="flex flex-col md:flex-row items-center gap-6 bg-dark/40 border border-light/10 p-6 rounded-2xl hover:bg-primary/20 transition cursor-pointer">
-                    <div className="text-center md:text-left flex-shrink-0">
-                      <div className="text-sm text-accent font-bold">{event.date.split(' ')[0]}</div>
-                      <div className="text-3xl font-display font-bold">{event.date.split(' ')[1]}</div>
-                    </div>
-                    <div className="flex-grow text-center md:text-left">
-                      <h4 className="text-xl font-bold text-light mb-1">{event.title}</h4>
-                      <div className="text-xs text-light/50 bg-light/10 px-2 py-1 rounded w-max mx-auto md:mx-0">{event.cat}</div>
-                    </div>
-                    <button className="text-accent hover:text-light transition flex-shrink-0">
-                      Register →
-                    </button>
-                  </div>
-                ))}
-              </div>
+              
+              {loading ? (
+                 <div className="space-y-4">
+                   <Skeleton className="h-24 w-full" />
+                   <Skeleton className="h-24 w-full" />
+                   <Skeleton className="h-24 w-full" />
+                 </div>
+              ) : upcomingEvents.length > 0 ? (
+                <div className="space-y-4">
+                  {upcomingEvents.map((event) => {
+                     const dateObj = new Date(event.date);
+                     const month = dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+                     const day = dateObj.getDate().toString().padStart(2, '0');
+                     return (
+                        <div key={event._id} className="flex flex-col md:flex-row items-center gap-6 bg-dark/40 border border-light/10 p-6 rounded-2xl hover:bg-primary/20 transition cursor-pointer">
+                          <div className="text-center md:text-left flex-shrink-0">
+                            <div className="text-sm text-accent font-bold">{month}</div>
+                            <div className="text-3xl font-display font-bold">{day}</div>
+                          </div>
+                          <div className="flex-grow text-center md:text-left">
+                            <h4 className="text-xl font-bold text-light mb-1">{event.title}</h4>
+                            <div className="text-xs text-light/50 bg-light/10 px-2 py-1 rounded w-max mx-auto md:mx-0">{event.category || 'General'}</div>
+                          </div>
+                          <button className="text-accent hover:text-light transition flex-shrink-0">
+                            Register →
+                          </button>
+                        </div>
+                     )
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-light/50 border border-dashed border-light/10 rounded-2xl">
+                  No upcoming events.
+                </div>
+              )}
             </div>
 
             {/* Stats Block */}
             <div className="bg-primary border border-light/10 rounded-3xl p-8 flex flex-col justify-center text-center relative overflow-hidden">
               <div className="absolute -top-16 -right-16 w-32 h-32 bg-green rounded-full blur-[80px] opacity-20"></div>
-              <h3 className="text-5xl font-display font-bold text-green mb-2">12+</h3>
+              <h3 className="text-5xl font-display font-bold text-green mb-2">{loading ? '-' : events.length}+</h3>
               <div className="text-xl font-bold mb-8">Planned Events in 2025</div>
               <blockquote className="text-light/70 italic relative">
                 "Volunteering at the Earth Summit changed my perspective entirely. It's more than an event; it's a movement."

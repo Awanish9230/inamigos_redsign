@@ -7,6 +7,8 @@ import SceneCanvas from '../components/3d/SceneCanvas';
 import HomeScene from '../components/3d/HomeScene';
 import { useStore } from '../store/store';
 import PageTransition from '../components/layout/PageTransition';
+import SmartImage from '../components/ui/SmartImage';
+import { IMAGES } from '../config/images';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -50,12 +52,12 @@ const Home = () => {
   }, []);
 
   const initiatives = [
-    { title: 'Project Seva', desc: 'Health & Nutrition', color: 'bg-green' },
-    { title: 'Bachpanshala', desc: 'Education for All', color: 'bg-accent' },
-    { title: 'Jeev', desc: 'Animal Rescue', color: 'bg-primary' },
-    { title: 'Udaan', desc: 'Women Empowerment', color: 'bg-blue-500' },
-    { title: 'Prakriti', desc: 'Sustainability', color: 'bg-emerald-600' },
-    { title: 'Vikas', desc: 'Skill Development', color: 'bg-orange-500' },
+    { title: 'Project Seva', desc: 'Health & Nutrition', color: 'bg-green', image: IMAGES.causes.seva },
+    { title: 'Bachpanshala', desc: 'Education for All', color: 'bg-accent', image: IMAGES.causes.bachpanshala },
+    { title: 'Jeev', desc: 'Animal Rescue', color: 'bg-primary', image: IMAGES.causes.jeev },
+    { title: 'Udaan', desc: 'Women Empowerment', color: 'bg-blue-500', image: IMAGES.causes.udaan },
+    { title: 'Prakriti', desc: 'Sustainability', color: 'bg-emerald-600', image: IMAGES.causes.prakriti },
+    { title: 'Vikas', desc: 'Skill Development', color: 'bg-orange-500', image: IMAGES.causes.vikas },
   ];
 
   return (
@@ -65,14 +67,26 @@ const Home = () => {
         <title>InAmigos Foundation - Home</title>
       </Helmet>
       
+      {/* 1. Background image layer */}
       <div className="fixed inset-0 z-0 pointer-events-none">
+        <SmartImage
+          src={IMAGES.home.hero}
+          alt="Hero background"
+          className="absolute inset-0 w-full h-full"
+          fallbackSeed="community"
+        />
+        {/* 2. Dark gradient overlay so text is readable */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0D1B2A]/80 via-[#0D1B2A]/60 to-[#0D1B2A]/90" />
+      </div>
+
+      <div className="fixed inset-0 z-10 pointer-events-none">
         <SceneCanvas>
           <HomeScene />
         </SceneCanvas>
       </div>
       
       {/* Hero Section */}
-      <section className="relative w-full h-screen min-h-screen flex flex-col justify-center items-center pt-20 z-10 overflow-hidden">
+      <section className="relative w-full h-screen min-h-screen flex flex-col justify-center items-center pt-20 z-20 overflow-hidden">
         <div className="text-center px-4 max-w-4xl mx-auto pointer-events-none mb-16">
           <h1 className="text-5xl md:text-7xl font-display font-bold text-light mb-6 drop-shadow-lg leading-tight">
             Transforming Lives through <br/><span className="text-accent relative inline-block mt-2">
@@ -119,7 +133,7 @@ const Home = () => {
       </section>
 
       {/* Main Content Area */}
-      <div className="relative z-10 bg-dark">
+      <div className="relative z-20 bg-dark">
         {/* Who We Are */}
         <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto reveal-section">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
@@ -135,12 +149,14 @@ const Home = () => {
             </div>
             <div className="relative group perspective-1000">
               <div className="w-full h-96 bg-primary/20 rounded-2xl border border-light/10 overflow-hidden transform transition-all duration-500 group-hover:rotate-y-12 group-hover:rotate-x-12 shadow-2xl relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-transparent"></div>
-                <div className="absolute inset-4 border border-light/20 rounded-xl"></div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-light/80 font-display text-xl font-bold p-8 text-center">
-                  <div className="w-24 h-24 mb-4 rounded-full border-4 border-green border-t-transparent animate-spin"></div>
-                  [Interactive Photo Grid Component Placeholder]
-                </div>
+                <SmartImage 
+                  src={IMAGES.home.whoWeAre} 
+                  alt="Who we are" 
+                  className="absolute inset-0 w-full h-full"
+                  fallbackSeed="children"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-transparent mix-blend-overlay"></div>
+                <div className="absolute inset-4 border border-light/20 rounded-xl pointer-events-none"></div>
               </div>
             </div>
           </div>
@@ -157,7 +173,13 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {initiatives.map((item, index) => (
                 <Link to="/causes" key={index} className="group perspective-1000">
-                  <div className={`p-8 rounded-2xl bg-dark/50 border border-light/10 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl relative overflow-hidden h-full flex flex-col justify-end min-h-[200px]`}>
+                  <div className={`p-8 rounded-2xl bg-dark/50 border border-light/10 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl relative overflow-hidden h-full flex flex-col justify-end min-h-[250px]`}>
+                    <SmartImage 
+                      src={item.image} 
+                      alt={item.title} 
+                      className="absolute inset-0 w-full h-full opacity-40 group-hover:opacity-60 transition-opacity duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/80 to-transparent"></div>
                     <div className={`absolute top-0 right-0 w-32 h-32 ${item.color} rounded-full blur-[80px] opacity-20 group-hover:opacity-50 transition-opacity`}></div>
                     <h3 className="text-2xl font-display font-bold text-light z-10">{item.title}</h3>
                     <p className="text-light/60 mt-2 z-10">{item.desc}</p>
@@ -170,11 +192,18 @@ const Home = () => {
 
         {/* CTA Banner */}
         <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto reveal-section text-center">
-          <div className="bg-gradient-to-r from-primary via-dark to-primary border border-light/20 p-12 md:p-20 rounded-3xl relative overflow-hidden shadow-[0_0_50px_rgba(27,42,107,0.5)]">
+          <div className="border border-light/20 p-12 md:p-20 rounded-3xl relative overflow-hidden shadow-[0_0_50px_rgba(27,42,107,0.5)]">
+            <SmartImage 
+              src={IMAGES.home.ctaBanner} 
+              alt="CTA Banner" 
+              className="absolute inset-0 w-full h-full opacity-30"
+              fallbackSeed="volunteer"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-dark/90 to-primary/90"></div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent rounded-full blur-[150px] opacity-20 pointer-events-none"></div>
             
-            <h2 className="text-4xl md:text-6xl font-display font-bold mb-6 relative z-10">Ready to make a difference?</h2>
-            <p className="text-xl text-light/70 mb-10 max-w-2xl mx-auto relative z-10">
+            <h2 className="text-4xl md:text-6xl font-display font-bold mb-6 relative z-10 text-light">Ready to make a difference?</h2>
+            <p className="text-xl text-light/80 mb-10 max-w-2xl mx-auto relative z-10">
               Whether you want to contribute your time or resources, there's a place for you in our community. Let's build a better tomorrow, together.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-6 relative z-10">

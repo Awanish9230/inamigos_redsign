@@ -6,6 +6,8 @@ import SceneCanvas from '../components/3d/SceneCanvas';
 import GalleryScene from '../components/3d/GalleryScene';
 import PageTransition from '../components/layout/PageTransition';
 import { useStore } from '../store/store';
+import SmartImage from '../components/ui/SmartImage';
+import { IMAGES } from '../config/images';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,7 +19,8 @@ const initialImages = Array.from({ length: 12 }).map((_, i) => ({
   category: filters[Math.floor(Math.random() * (filters.length - 1)) + 1],
   caption: `Impact Story ${i+1}`,
   story: 'Brief snippet about this particular moment in our journey. Volunteering makes a difference.',
-  height: Math.floor(Math.random() * 200) + 200, // random height for masonry effect
+  height: Math.floor(Math.random() * 200) + 250, // random height for masonry effect
+  image: IMAGES.gallery.allStories[i % IMAGES.gallery.allStories.length]
 }));
 
 const Gallery = () => {
@@ -103,10 +106,11 @@ const Gallery = () => {
           {/* Masonry Grid */}
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
             {/* Become a Storyteller CTA Card */}
-            <div className="gallery-item break-inside-avoid bg-primary/40 border border-accent/30 p-8 rounded-2xl flex flex-col items-center justify-center text-center h-64 hover:bg-primary/60 transition cursor-pointer">
-              <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center text-accent text-2xl mb-4 border border-accent/40">📷</div>
-              <h3 className="text-2xl font-display font-bold text-light mb-2">Become a Storyteller</h3>
-              <p className="text-sm text-light/70">Join our media team and document our impact.</p>
+            <div className="gallery-item break-inside-avoid bg-primary/40 border border-accent/30 p-8 rounded-2xl flex flex-col items-center justify-center text-center h-64 hover:bg-primary/60 transition cursor-pointer relative overflow-hidden group">
+              <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center text-accent text-2xl mb-4 border border-accent/40 z-10">📷</div>
+              <h3 className="text-2xl font-display font-bold text-light mb-2 z-10">Become a Storyteller</h3>
+              <p className="text-sm text-light/70 z-10">Join our media team and document our impact.</p>
+              <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-50 transition-opacity"></div>
             </div>
 
             {images.map((img) => (
@@ -115,12 +119,10 @@ const Gallery = () => {
                 className="gallery-item break-inside-avoid relative group rounded-2xl overflow-hidden bg-dark/50 border border-light/10"
                 style={{ height: img.height }}
               >
-                {/* Image Placeholder */}
-                <div className="absolute inset-0 bg-dark/80 flex items-center justify-center">
-                  <span className="text-light/20 font-display">Photo</span>
+                <div className="absolute inset-0 bg-dark/80 flex items-center justify-center overflow-hidden">
+                  <SmartImage src={img.image} className="w-full h-full" fallbackSeed="event" />
                 </div>
                 
-                {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                   <div className="inline-block px-3 py-1 bg-accent/20 text-accent rounded-full text-xs font-bold border border-accent/30 w-max mb-3">
                     {img.category}

@@ -5,6 +5,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SceneCanvas from '../components/3d/SceneCanvas';
 import AboutScene from '../components/3d/AboutScene';
 import PageTransition from '../components/layout/PageTransition';
+import SmartImage from '../components/ui/SmartImage';
+import { IMAGES } from '../config/images';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -74,10 +76,14 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div className="relative group perspective-1000">
               <div className="w-full h-96 bg-primary/30 rounded-3xl border border-light/10 overflow-hidden transform transition-all duration-700 group-hover:rotate-y-6 group-hover:-rotate-x-6 shadow-2xl relative flex items-center justify-center">
-                <div className="absolute inset-4 border-2 border-accent/30 rounded-2xl transform transition-transform duration-700 group-hover:translate-z-10 group-hover:scale-105"></div>
-                <div className="absolute inset-8 bg-dark/40 backdrop-blur-sm rounded-xl transform transition-transform duration-700 group-hover:translate-z-20 group-hover:scale-95 flex items-center justify-center border border-light/10">
-                  <span className="text-light/50 font-display font-bold text-xl">[Group Photo Parallax]</span>
-                </div>
+                <SmartImage 
+                  src={IMAGES.about.team}
+                  alt="Our Team"
+                  className="absolute inset-0 w-full h-full"
+                  fallbackSeed="team"
+                />
+                <div className="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500"></div>
+                <div className="absolute inset-4 border-2 border-accent/30 rounded-2xl transform transition-transform duration-700 group-hover:translate-z-10 group-hover:scale-105 pointer-events-none"></div>
               </div>
             </div>
             

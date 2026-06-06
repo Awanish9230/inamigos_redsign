@@ -5,6 +5,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SceneCanvas from '../components/3d/SceneCanvas';
 import VolunteersScene from '../components/3d/VolunteersScene';
 import PageTransition from '../components/layout/PageTransition';
+import SmartImage from '../components/ui/SmartImage';
+import { IMAGES } from '../config/images';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -55,14 +57,26 @@ const Volunteers = () => {
         <title>Volunteers - InAmigos Foundation</title>
       </Helmet>
       
+      {/* 1. Background image layer */}
       <div className="fixed inset-0 z-0 pointer-events-none">
+        <SmartImage
+          src={IMAGES.volunteers.hero}
+          alt="Volunteers background"
+          className="absolute inset-0 w-full h-full"
+          fallbackSeed="team"
+        />
+        {/* 2. Dark gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0D1B2A]/80 via-[#0D1B2A]/60 to-[#0D1B2A]/90" />
+      </div>
+
+      <div className="fixed inset-0 z-10 pointer-events-none">
         <SceneCanvas>
           <VolunteersScene />
         </SceneCanvas>
       </div>
 
       {/* Hero Section */}
-      <section className="relative w-full h-screen min-h-screen flex flex-col justify-center items-center pt-20 z-10 text-center overflow-hidden">
+      <section className="relative w-full h-screen min-h-screen flex flex-col justify-center items-center pt-20 z-20 text-center overflow-hidden">
         <div className="px-4 pointer-events-none">
           <div className="inline-block px-4 py-2 bg-light/10 border border-light/20 rounded-full text-xs font-bold text-accent uppercase tracking-wider mb-6 backdrop-blur-md">
             500+ Active Volunteers
@@ -76,7 +90,7 @@ const Volunteers = () => {
         </div>
       </section>
 
-      <div className="relative z-10 bg-dark">
+      <div className="relative z-20 bg-dark">
         {/* Visionary Leads */}
         <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto reveal-section">
           <div className="text-center mb-16">
@@ -88,6 +102,12 @@ const Volunteers = () => {
               <div key={i} className="group perspective-1000">
                 <div className="bg-primary/20 border border-light/10 rounded-3xl p-6 text-center transform transition-all duration-500 hover:rotate-y-6 hover:-translate-y-2 hover:shadow-2xl">
                   <div className="w-32 h-32 mx-auto rounded-full bg-dark/50 border-4 border-accent/20 mb-6 overflow-hidden relative">
+                    <SmartImage 
+                      src={IMAGES.volunteers[`lead${i}`]}
+                      alt={`Lead ${i}`}
+                      className="absolute inset-0 w-full h-full"
+                      fallbackSeed={`person${i}`}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-tr from-accent/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                   <h3 className="text-xl font-display font-bold text-light mb-1">Lead Name {i}</h3>
@@ -114,7 +134,14 @@ const Volunteers = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {[...Array(11)].map((_, i) => (
                 <div key={i} className="bg-dark/50 border border-light/10 rounded-2xl p-4 text-center hover:bg-dark transition">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-light/10 mb-3"></div>
+                  <div className="w-16 h-16 mx-auto rounded-full bg-light/10 mb-3 overflow-hidden">
+                    <SmartImage 
+                      src={IMAGES.volunteers[`vol${(i % 5) + 1}`]}
+                      alt={`Volunteer ${i+1}`}
+                      className="w-full h-full"
+                      fallbackSeed={`volunteer${i}`}
+                    />
+                  </div>
                   <div className="text-sm font-bold text-light">Volunteer {i+1}</div>
                   <div className="text-xs text-light/50">Field Ops</div>
                 </div>

@@ -39,3 +39,28 @@
     transform: rotateY(12deg);
   }
 }
+/* Dark theme placeholder text */
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* Dark themed select dropdown */
+select option {
+  background-color: #111f3a;
+  color: #ffffff;
+}
+
+/* Focus glow effect */
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+  border-color: #FF6B00 !important;
+}
+
+/* Makes Google Maps go dark — no API needed */
+iframe[src*="google.com/maps"] {
+  filter: invert(90%) hue-rotate(180deg) saturate(0.8);
+  border-radius: 16px;
+}
