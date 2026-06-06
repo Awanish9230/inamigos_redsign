@@ -17,6 +17,7 @@ const Home = () => {
   const setDonationModalOpen = useStore((state) => state.setDonationModalOpen);
 
   useEffect(() => {
+    let intervals = [];
     let ctx = gsap.context(() => {
       // Reveal animations for sections
       gsap.utils.toArray('.reveal-section').forEach((section) => {
@@ -33,22 +34,54 @@ const Home = () => {
         });
       });
 
-      // Number counters
+      // Number counters with real-time increment simulation
       gsap.utils.toArray('.counter-num').forEach((counter) => {
+        let currentVal = { val: 0 };
         const target = parseInt(counter.getAttribute('data-target'));
-        gsap.to(counter, {
-          innerHTML: target,
-          duration: 2,
-          snap: { innerHTML: 1 },
+        
+        gsap.to(currentVal, {
+          val: target,
+          duration: 2.5,
+          ease: 'power2.out',
+          onUpdate: function() {
+            counter.innerHTML = Math.floor(currentVal.val).toLocaleString('en-IN');
+          },
           scrollTrigger: {
             trigger: counter,
-            start: 'top 80%'
+            start: 'top 85%'
+          },
+          onComplete: function() {
+            // Real-time continuous increment simulation after initial load
+            const intervalId = setInterval(() => {
+              if (Math.random() > 0.3) {
+                // Larger targets (like 15000) increment more often and by larger amounts
+                // Smaller targets (like 12) increment rarely and by 1
+                const increment = target > 1000 
+                  ? Math.floor(Math.random() * 5) + 1 
+                  : (Math.random() > 0.9 ? 1 : 0);
+                  
+                if (increment > 0) {
+                  currentVal.val += increment;
+                  counter.innerHTML = Math.floor(currentVal.val).toLocaleString('en-IN');
+                  
+                  // Flash green briefly to show it updated
+                  gsap.fromTo(counter, 
+                    { color: '#00C875', scale: 1.1 }, 
+                    { color: 'inherit', scale: 1, duration: 0.5 }
+                  );
+                }
+              }
+            }, 2500 + Math.random() * 2000); // Random interval between 2.5s and 4.5s
+            intervals.push(intervalId);
           }
         });
       });
     }, mainRef);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      intervals.forEach(id => clearInterval(id));
+    };
   }, []);
 
   const initiatives = [
@@ -170,22 +203,49 @@ const Home = () => {
               <h2 className="text-4xl md:text-5xl font-display font-bold">Key Initiatives</h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {initiatives.map((item, index) => (
-                <Link to="/causes" key={index} className="group perspective-1000">
-                  <div className={`p-8 rounded-2xl bg-dark/50 border border-light/10 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl relative overflow-hidden h-full flex flex-col justify-end min-h-[250px]`}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-fr">
+              {initiatives.map((item, index) => {
+                const bentoClasses = [
+                  'md:col-span-2 md:row-span-2 min-h-[300px] md:min-h-[450px]',
+                  'md:col-span-1 md:row-span-1 min-h-[200px]',
+                  'md:col-span-1 md:row-span-1 min-h-[200px]',
+                  'md:col-span-1 md:row-span-2 min-h-[300px] md:min-h-[450px]',
+                  'md:col-span-2 md:row-span-1 min-h-[200px]',
+                  'md:col-span-2 md:row-span-1 min-h-[200px]',
+                ];
+                
+                return (
+                  <Link 
+                    to="/causes" 
+                    key={index} 
+                    className={`group ${bentoClasses[index]} rounded-3xl overflow-hidden relative border border-light/10 shadow-lg hover:shadow-[0_0_40px_rgba(255,107,0,0.2)] transition-all duration-700`}
+                  >
                     <SmartImage 
                       src={item.image} 
                       alt={item.title} 
-                      className="absolute inset-0 w-full h-full opacity-40 group-hover:opacity-60 transition-opacity duration-500"
+                      className="absolute inset-0 w-full h-full opacity-50 group-hover:opacity-70 group-hover:scale-110 transition-all duration-700 ease-out"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/80 to-transparent"></div>
-                    <div className={`absolute top-0 right-0 w-32 h-32 ${item.color} rounded-full blur-[80px] opacity-20 group-hover:opacity-50 transition-opacity`}></div>
-                    <h3 className="text-2xl font-display font-bold text-light z-10">{item.title}</h3>
-                    <p className="text-light/60 mt-2 z-10">{item.desc}</p>
-                  </div>
-                </Link>
-              ))}
+                    <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/60 to-transparent group-hover:opacity-80 transition-opacity duration-700"></div>
+                    <div className={`absolute top-0 right-0 w-48 h-48 ${item.color} rounded-full blur-[100px] opacity-20 group-hover:opacity-60 transition-opacity duration-700`}></div>
+                    
+                    <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                      <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className={`font-display font-bold text-light ${index === 0 ? 'text-4xl' : 'text-2xl'}`}>
+                            {item.title}
+                          </h3>
+                          <div className="w-10 h-10 rounded-full bg-light/10 backdrop-blur-md border border-light/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-500 ease-out">
+                            <span className="text-light text-xl leading-none">→</span>
+                          </div>
+                        </div>
+                        <p className="text-light/70 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                          {item.desc}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>

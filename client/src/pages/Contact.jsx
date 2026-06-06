@@ -408,17 +408,34 @@ const Contact = () => {
         </section>
 
         {/* Newsletter Section */}
-        <section className="py-20 bg-gradient-to-r from-primary to-blue-900 border-t border-light/20">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-3xl font-display font-bold text-light mb-6">Join our movement</h2>
-            <form className="flex flex-col sm:flex-row gap-4 justify-center">
+        <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto reveal-section text-center">
+          <div 
+            className="rounded-3xl p-12 shadow-[0_0_50px_rgba(27,42,107,0.5)] relative overflow-hidden border border-light/10"
+            style={{ background: 'linear-gradient(135deg, #111f3a 0%, #0D1B2A 100%)' }}
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-accent rounded-full blur-[100px] opacity-10 pointer-events-none"></div>
+            
+            <h2 className="text-3xl md:text-5xl font-display font-bold text-light mb-4 relative z-10">Join our movement</h2>
+            <p className="text-light/60 mb-8 text-lg relative z-10">Get the latest updates on our initiatives and ways to help.</p>
+            
+            <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto relative z-10">
               <input 
                 type="email" 
                 placeholder="Enter your email address" 
-                className="w-full sm:w-96 bg-dark/50 border border-light/20 rounded-full px-6 py-4 text-light focus:outline-none focus:border-accent transition"
+                className="flex-grow rounded-xl px-6 py-4 text-light focus:outline-none transition"
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}
               />
-              <button type="button" className="bg-light text-dark px-8 py-4 rounded-full font-bold hover:bg-light/90 transition">
-                Subscribe
+              <button 
+                type="button" 
+                className="px-8 py-4 rounded-xl font-bold text-light transition shadow-lg relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #FF6B00, #ff8c38)',
+                }}
+              >
+                Subscribe ➤
               </button>
             </form>
           </div>

@@ -58,8 +58,17 @@ const Events = () => {
     return () => ctx.revert();
   }, [loading]);
 
-  const featuredEvents = events.slice(0, 2);
-  const upcomingEvents = events.slice(2);
+  const MOCK_EVENTS = [
+    { _id: '1', title: 'World Environment Day Summit', category: 'Environment', description: 'Join us for a massive tree plantation drive and sustainability workshops across 5 major cities.', date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(), location: 'Multiple Cities', coverImage: IMAGES.events.earthDay },
+    { _id: '2', title: 'Volunteer Leadership Training', category: 'Education', description: 'An intensive 2-day workshop designed to equip our core volunteers with leadership and management skills.', date: new Date(new Date().setMonth(new Date().getMonth() + 2)).toISOString(), location: 'New Delhi HQ', coverImage: IMAGES.events.volunteerTraining },
+    { _id: '3', title: 'Rural Healthcare Camp', category: 'Health', description: 'Providing free medical checkups, essential medicines, and hygiene kits to over 500 families.', date: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(), location: 'Chhattisgarh', coverImage: IMAGES.events.happinessDay },
+    { _id: '4', title: 'Clean Water Initiative', category: 'Social Well-being', description: 'Installing water purification systems in government schools.', date: new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(), location: 'Rural Maharashtra', coverImage: IMAGES.events.waterDay },
+    { _id: '5', title: 'Annual Impact Gala', category: 'General', description: 'Celebrating our milestones and honoring the volunteers who made it possible.', date: new Date(new Date().setMonth(new Date().getMonth() + 4)).toISOString(), location: 'Mumbai', coverImage: IMAGES.events.summit },
+  ];
+
+  const displayEvents = events.length > 0 ? events : MOCK_EVENTS;
+  const featuredEvents = displayEvents.slice(0, 2);
+  const upcomingEvents = displayEvents.slice(2);
 
   return (
     <PageTransition>
@@ -224,7 +233,7 @@ const Events = () => {
             {/* Stats Block */}
             <div className="bg-primary border border-light/10 rounded-3xl p-8 flex flex-col justify-center text-center relative overflow-hidden">
               <div className="absolute -top-16 -right-16 w-32 h-32 bg-green rounded-full blur-[80px] opacity-20"></div>
-              <h3 className="text-5xl font-display font-bold text-green mb-2">{loading ? '-' : events.length}+</h3>
+              <h3 className="text-5xl font-display font-bold text-green mb-2">{loading ? '-' : displayEvents.length}+</h3>
               <div className="text-xl font-bold mb-8">Planned Events in 2025</div>
               <blockquote className="text-light/70 italic relative">
                 "Volunteering at the Earth Summit changed my perspective entirely. It's more than an event; it's a movement."
@@ -236,20 +245,32 @@ const Events = () => {
 
         {/* Subscribe Banner */}
         <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto reveal-section text-center">
-          <div className="bg-gradient-to-r from-accent to-orange-500 rounded-3xl p-12 shadow-[0_0_40px_rgba(255,107,0,0.4)]">
-            <h2 className="text-3xl md:text-5xl font-display font-bold text-light mb-4">Don't Miss Out</h2>
-            <p className="text-light/90 mb-8 text-lg">Get notified about new events and volunteer opportunities.</p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+          <div 
+            className="rounded-3xl p-12 shadow-[0_0_50px_rgba(27,42,107,0.5)] relative overflow-hidden border border-light/10"
+            style={{ background: 'linear-gradient(135deg, #111f3a 0%, #0D1B2A 100%)' }}
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-accent rounded-full blur-[100px] opacity-10"></div>
+            
+            <h2 className="text-3xl md:text-5xl font-display font-bold text-light mb-4 relative z-10">Don't Miss Out</h2>
+            <p className="text-light/60 mb-8 text-lg relative z-10">Get notified about new events and volunteer opportunities.</p>
+            <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto relative z-10">
               <input 
                 type="email" 
                 placeholder="Enter your email address" 
-                className="flex-grow bg-light border-none rounded-full px-6 py-4 text-dark focus:outline-none shadow-inner"
+                className="flex-grow rounded-xl px-6 py-4 text-light focus:outline-none transition"
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}
               />
               <button 
                 type="button" 
-                className="bg-dark text-light px-8 py-4 rounded-full font-bold hover:bg-dark/80 transition shadow-lg"
+                className="px-8 py-4 rounded-xl font-bold text-light transition shadow-lg relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #FF6B00, #ff8c38)',
+                }}
               >
-                Subscribe Now
+                Subscribe ➤
               </button>
             </form>
           </div>

@@ -50,6 +50,30 @@ const Volunteers = () => {
     }
   };
 
+  const inputStyle = {
+    width: '100%',
+    padding: '14px 16px',
+    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: '10px',
+    color: '#ffffff',
+    fontSize: '0.95rem',
+    outline: 'none',
+    transition: 'border-color 0.25s ease, box-shadow 0.25s ease',
+    boxSizing: 'border-box',
+    fontFamily: 'inherit',
+  };
+
+  const selectStyle = {
+    ...inputStyle,
+    appearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23FF6B00' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 16px center',
+    paddingRight: '44px',
+    cursor: 'pointer',
+  };
+
   return (
     <PageTransition>
     <div ref={mainRef}>
@@ -182,12 +206,37 @@ const Volunteers = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* Direct Contact Info */}
+              <div className="mt-12 p-6 rounded-2xl border border-light/10" style={{ background: 'linear-gradient(135deg, rgba(255,107,0,0.05) 0%, rgba(0,0,0,0.2) 100%)' }}>
+                <h4 className="text-lg font-bold text-light mb-4 border-b border-light/10 pb-2">Direct Contact</h4>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent">📞</div>
+                  <div>
+                    <div className="text-xs text-light/50 font-bold uppercase tracking-wider">Mobile Number</div>
+                    <div className="text-light font-bold">7390083864</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent">✉️</div>
+                  <div>
+                    <div className="text-xs text-light/50 font-bold uppercase tracking-wider">Email Address</div>
+                    <div className="text-light font-bold">awanishverma864@gmail.com</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Application Form */}
-            <div className="bg-primary border border-light/10 p-8 md:p-12 rounded-3xl shadow-2xl relative overflow-hidden">
+            <div 
+              className="p-8 md:p-12 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col justify-center"
+              style={{
+                background: 'linear-gradient(135deg, #111f3a 0%, #0D1B2A 100%)',
+                border: '1px solid rgba(255,107,0,0.15)',
+              }}
+            >
               <div className="absolute -top-32 -right-32 w-64 h-64 bg-accent rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
-              <h3 className="text-3xl font-display font-bold mb-2">Quick Application</h3>
+              <h3 className="text-3xl font-display font-bold mb-2 text-light">Quick Application</h3>
               <p className="text-sm text-light/60 mb-8">We usually respond within 48 hours.</p>
               
               {submitStatus === 'success' ? (
@@ -197,31 +246,33 @@ const Volunteers = () => {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                   <div>
-                    <label className="block text-xs font-bold text-light/70 uppercase tracking-wide mb-2">Full Name</label>
+                    <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', marginBottom: '8px' }}>FULL NAME</label>
                     <input 
                       type="text" 
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full bg-dark/50 border border-light/20 rounded-xl px-4 py-3 text-light focus:outline-none focus:border-accent transition"
+                      style={inputStyle}
+                      placeholder="Your full name"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-light/70 uppercase tracking-wide mb-2">Email Address</label>
+                    <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', marginBottom: '8px' }}>EMAIL ADDRESS</label>
                     <input 
                       type="email" 
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full bg-dark/50 border border-light/20 rounded-xl px-4 py-3 text-light focus:outline-none focus:border-accent transition"
+                      style={inputStyle}
+                      placeholder="your@email.com"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-light/70 uppercase tracking-wide mb-2">Area of Interest</label>
+                    <label style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', marginBottom: '8px' }}>AREA OF INTEREST</label>
                     <select 
                       value={formData.areaOfInterest}
                       onChange={(e) => setFormData({...formData, areaOfInterest: e.target.value})}
-                      className="w-full bg-dark/50 border border-light/20 rounded-xl px-4 py-3 text-light focus:outline-none focus:border-accent transition appearance-none"
+                      style={selectStyle}
                     >
                       <option>Education</option>
                       <option>Health & Nutrition</option>
@@ -233,9 +284,22 @@ const Volunteers = () => {
                   </div>
                   <button 
                     type="submit" 
-                    className="w-full bg-accent text-light py-4 rounded-xl font-bold text-lg hover:bg-accent/90 transition shadow-[0_0_15px_rgba(255,107,0,0.3)] mt-4"
+                    className="w-full py-4 rounded-xl font-bold text-lg text-light relative overflow-hidden mt-6"
+                    style={{
+                      background: 'linear-gradient(135deg, #FF6B00, #ff8c38)',
+                      boxShadow: '0 4px 24px rgba(255,107,0,0.35)',
+                      transition: 'all 0.3s ease',
+                    }}
+                    onMouseEnter={e => {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 8px 32px rgba(255,107,0,0.5)';
+                    }}
+                    onMouseLeave={e => {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 4px 24px rgba(255,107,0,0.35)';
+                    }}
                   >
-                    Submit Application
+                    Submit Application ➤
                   </button>
                 </form>
               )}
