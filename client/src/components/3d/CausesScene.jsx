@@ -1,46 +1,58 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useStore } from '../../store/store';
-import { Sphere, Box, Cylinder, Torus, Octahedron, Cone } from '@react-three/drei';
+import { Image } from '@react-three/drei';
+import { IMAGES } from '../../config/images';
 
-export const OrbitingIcons = () => {
+const CausesCarousel = () => {
   const groupRef = useRef();
   const mousePosition = useStore((state) => state.mousePosition);
+  
+  const causes = useMemo(() => [
+    IMAGES.causes.seva,
+    IMAGES.causes.bachpanshala,
+    IMAGES.causes.jeev,
+    IMAGES.causes.udaan,
+    IMAGES.causes.prakriti,
+    IMAGES.causes.vikas
+  ], []);
+
+  const radius = 4;
 
   useFrame((state, delta) => {
-    groupRef.current.rotation.y += delta * 0.1;
-    groupRef.current.rotation.x += (mousePosition.y * 0.2 - groupRef.current.rotation.x) * 0.1;
-    groupRef.current.rotation.z += (-mousePosition.x * 0.2 - groupRef.current.rotation.z) * 0.1;
+    groupRef.current.rotation.y -= delta * 0.1; // Auto rotate
+    
+    const targetX = mousePosition.x * 1;
+    const targetY = mousePosition.y * 1;
+    
+    groupRef.current.position.x += (targetX - groupRef.current.position.x) * 0.05;
+    groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.05;
+    groupRef.current.rotation.x += (targetY * 0.2 - groupRef.current.rotation.x) * 0.05;
   });
 
-  const icons = [
-    { component: Sphere, color: '#00C875', pos: [3, 0, 0] },     // Health
-    { component: Box, color: '#FF6B00', pos: [1.5, 0, 2.6] },    // Education
-    { component: Cone, color: '#1B2A6B', pos: [-1.5, 0, 2.6] },  // Animal
-    { component: Torus, color: '#3B82F6', pos: [-3, 0, 0] },     // Women
-    { component: Cylinder, color: '#059669', pos: [-1.5, 0, -2.6] }, // Sustainability
-    { component: Octahedron, color: '#F97316', pos: [1.5, 0, -2.6] } // Skills
-  ];
-
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
-      {icons.map((Icon, i) => (
-        <group key={i} position={Icon.pos}>
-          <Icon.component args={i === 3 ? [0.6, 0.2, 16, 100] : [0.8]}>
-            <meshStandardMaterial color={Icon.color} roughness={0.2} metalness={0.8} />
-          </Icon.component>
-        </group>
-      ))}
-      <mesh>
-        <sphereGeometry args={[1.5, 16, 16]} />
-        <meshBasicMaterial color="#1B2A6B" wireframe transparent opacity={0.1} />
-      </mesh>
+    <group ref={groupRef}>
+      {causes.map((url, i) => {
+        const angle = (i / causes.length) * Math.PI * 2;
+        const x = Math.sin(angle) * radius;
+        const z = Math.cos(angle) * radius;
+        return (
+          <Image 
+            key={i} 
+            url={url} 
+            position={[x, 0, z]} 
+            rotation={[0, angle, 0]} 
+            scale={[2.5, 3]} 
+            transparent 
+          />
+        );
+      })}
     </group>
   );
 };
 
 const CausesScene = () => {
-  return <OrbitingIcons />;
+  return <CausesCarousel />;
 };
 
 export default CausesScene;

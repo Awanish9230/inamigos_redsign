@@ -1,44 +1,56 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Box, Text } from '@react-three/drei';
 import { useStore } from '../../store/store';
+import { Image } from '@react-three/drei';
+import { IMAGES } from '../../config/images';
 
-export const CalendarCube = () => {
+const TimelineSpiral = () => {
   const groupRef = useRef();
   const mousePosition = useStore((state) => state.mousePosition);
+  
+  const events = useMemo(() => [
+    IMAGES.events.summit, IMAGES.events.earthDay, IMAGES.events.volunteerTraining,
+    IMAGES.events.happinessDay, IMAGES.events.waterDay, IMAGES.home.ctaBanner,
+    IMAGES.causes.bachpanshala, IMAGES.causes.seva
+  ], []);
 
   useFrame((state, delta) => {
-    groupRef.current.rotation.y += delta * 0.2;
-    groupRef.current.rotation.x += delta * 0.1;
-    groupRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.2;
+    groupRef.current.rotation.z += delta * 0.2; // Rotate the spiral
+    
+    const targetX = mousePosition.x * 1;
+    const targetY = mousePosition.y * 1;
+    
+    groupRef.current.position.x += (targetX - groupRef.current.position.x) * 0.05;
+    groupRef.current.position.y += (targetY - groupRef.current.position.y) * 0.05;
   });
 
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
-      <Box args={[2, 2, 2]}>
-        <meshStandardMaterial color="#1B2A6B" emissive="#1B2A6B" emissiveIntensity={0.2} wireframe />
-      </Box>
-      <Box args={[1.9, 1.9, 1.9]}>
-        <meshStandardMaterial color="#0D1B2A" />
-      </Box>
-      <Text position={[0, 0, 1.01]} fontSize={0.8} color="#00C875">
-        22
-      </Text>
-      <Text position={[0, 0, -1.01]} rotation={[0, Math.PI, 0]} fontSize={0.8} color="#FF6B00">
-        05
-      </Text>
-      <Text position={[1.01, 0, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.8} color="#F5F7FF">
-        12
-      </Text>
-      <Text position={[-1.01, 0, 0]} rotation={[0, -Math.PI / 2, 0]} fontSize={0.8} color="#3B82F6">
-        30
-      </Text>
+    <group ref={groupRef} rotation={[Math.PI / 4, Math.PI / 4, 0]}>
+      {events.map((url, i) => {
+        const t = i / events.length;
+        const angle = t * Math.PI * 4; // Two full turns
+        const radius = 2 + t * 2;
+        const x = Math.sin(angle) * radius;
+        const y = Math.cos(angle) * radius;
+        const z = -t * 10; // Depth into the screen
+        
+        return (
+          <Image 
+            key={i} 
+            url={url} 
+            position={[x, y, z]} 
+            rotation={[0, 0, -angle]}
+            scale={[2, 1.5]} 
+            transparent 
+          />
+        );
+      })}
     </group>
   );
 };
 
 const EventsScene = () => {
-  return <CalendarCube />;
+  return <TimelineSpiral />;
 };
 
 export default EventsScene;

@@ -1,51 +1,49 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Plane } from '@react-three/drei';
 import { useStore } from '../../store/store';
-import gsap from 'gsap';
+import { Image, Float } from '@react-three/drei';
+import { IMAGES } from '../../config/images';
 
-export const Envelope = () => {
+const ContactCard = () => {
   const groupRef = useRef();
-  const flapRef = useRef();
   const mousePosition = useStore((state) => state.mousePosition);
 
-  useEffect(() => {
-    gsap.to(flapRef.current.rotation, {
-      x: Math.PI,
-      duration: 2,
-      ease: "power2.inOut",
-      delay: 0.5
-    });
-  }, []);
-
   useFrame((state, delta) => {
-    groupRef.current.rotation.y += (mousePosition.x * 0.2 - groupRef.current.rotation.y) * 0.1;
-    groupRef.current.rotation.x += (mousePosition.y * 0.2 - groupRef.current.rotation.x) * 0.1;
-    groupRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1 - 1;
+    const targetX = mousePosition.x * 2;
+    const targetY = mousePosition.y * 2;
+    
+    // Smooth, intense tilt
+    groupRef.current.rotation.y += (targetX * 0.3 - groupRef.current.rotation.y) * 0.05;
+    groupRef.current.rotation.x += (-targetY * 0.3 - groupRef.current.rotation.x) * 0.05;
+    
+    groupRef.current.position.x += (targetX * 0.2 - groupRef.current.position.x) * 0.05;
+    groupRef.current.position.y += (targetY * 0.2 - groupRef.current.position.y) * 0.05;
   });
 
   return (
-    <group ref={groupRef} position={[0, -1, 0]}>
-      <Plane args={[3, 2]} position={[0, 0, -0.1]}>
-        <meshStandardMaterial color="#1B2A6B" />
-      </Plane>
-      <Plane args={[3, 2]} position={[0, 0, 0.1]}>
-        <meshStandardMaterial color="#0D1B2A" wireframe />
-      </Plane>
-      <group position={[0, 1, -0.1]}>
-        <group ref={flapRef}>
-          <mesh position={[0, -0.5, 0]} rotation={[0, 0, Math.PI / 4]}>
-            <planeGeometry args={[2.1, 2.1]} />
-            <meshStandardMaterial color="#FF6B00" wireframe opacity={0.8} transparent />
-          </mesh>
-        </group>
-      </group>
+    <group ref={groupRef}>
+      <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.5}>
+        <Image 
+          url={IMAGES.contact.office} 
+          position={[0, 0, 0]} 
+          scale={[6, 4]} 
+          transparent 
+        />
+        {/* Subtle shadow/duplicate behind */}
+        <Image 
+          url={IMAGES.contact.office} 
+          position={[0.2, -0.2, -0.5]} 
+          scale={[6, 4]} 
+          transparent 
+          opacity={0.3}
+        />
+      </Float>
     </group>
   );
 };
 
 const ContactScene = () => {
-  return <Envelope />;
+  return <ContactCard />;
 };
 
 export default ContactScene;
